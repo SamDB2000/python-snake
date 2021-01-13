@@ -1,4 +1,4 @@
-import sys, time
+import sys, random
 import pygame as pg
 pg.init()
 
@@ -11,12 +11,12 @@ clock = pg.time.Clock()
 
 screen = pg.display.set_mode(size)
 
-ball = pg.image.load("intro_ball.gif")
-snakeRect = ball.get_rect()
+#ball = pg.image.load("intro_ball.gif")
+#snakeRect = ball.get_rect()
 
 def random_location():
-    x = randint(0, 39) * 25
-    y = randint(0, 29) * 25
+    x = random.randint(0, 39) * 25
+    y = random.randint(0, 29) * 25
     return (x, y)
 
 # Rect(left, top, width, height) -> Rect
