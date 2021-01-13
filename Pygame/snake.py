@@ -10,7 +10,9 @@ black = (0, 0, 0)
 white = (255, 255, 255)
 yellow = (241, 252, 25)
 blue = (0, 106, 255)
+red = (237, 64, 64)
 clock = pg.time.Clock()
+game_over = False
 
 screen = pg.display.set_mode(size)
 
@@ -40,24 +42,34 @@ while 1:
         if event.type == pg.QUIT: sys.exit()
         elif event.type == pg.KEYDOWN and event.key == pg.K_ESCAPE: sys.exit()
         elif event.type == pg.KEYDOWN and event.key == pg.K_q: sys.exit()
-        elif event.type == pg.KEYDOWN and event.key == pg.K_RIGHT:
-            speed = [20, 0]
-        elif event.type == pg.KEYDOWN and event.key == pg.K_LEFT:
-            speed = [-20, 0]
-        elif event.type == pg.KEYDOWN and event.key == pg.K_DOWN:
-            speed = [0, 20]
-        elif event.type == pg.KEYDOWN and event.key == pg.K_UP:
-            speed = [0, -20]
+        if not game_over:
+            if event.type == pg.KEYDOWN and event.key == pg.K_RIGHT and speed != [-20, 0]:
+                speed = [20, 0]
+            elif event.type == pg.KEYDOWN and event.key == pg.K_LEFT and speed != [20, 0]:
+                speed = [-20, 0]
+            elif event.type == pg.KEYDOWN and event.key == pg.K_DOWN and speed != [0, -20]:
+                speed = [0, 20]
+            elif event.type == pg.KEYDOWN and event.key == pg.K_UP and speed != [0, 20]:
+                speed = [0, -20]
+        
     
     snakeRect = snakeRects[0].move(speed)  # this is just for convenience (snakeRect is the head of the snake)
     # Move the snake by adding the new head and deleting the tail
-    snakeRects.appendleft(snakeRect)
     snake_tail = snakeRects.pop()
 
+    for square in snakeRects:
+        if pg.Rect.colliderect(snakeRect, square):
+            game_over = True
+            speed = [0, 0]
+
+    snakeRects.appendleft(snakeRect)    
+
     if snakeRect.left < 0 or snakeRect.right > width:
-        speed[0] = -speed[0]  # Change this to ending the game eventually
+        game_over = True
+        speed = [0, 0]
     if snakeRect.top < 0 or snakeRect.bottom > height:
-        speed[1] = -speed[1]  # Change this to ending the game eventually
+        game_over = True
+        speed = [0, 0]
 
     # If the snake eats a fruit:
     if pg.Rect.colliderect(snakeRect, fruit):
@@ -70,4 +82,7 @@ while 1:
     # for every rectangle in snakeRects
     for snake in snakeRects:
         pg.draw.rect(screen, blue, snake, 0, 0)
+    if game_over == True:
+        pg.draw.rect(screen, red, snakeRect, 0, 0)
+        
     pg.display.flip()
